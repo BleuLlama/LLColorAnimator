@@ -20,7 +20,7 @@ LLColorAnimator::LLColorAnimator( const uint32_t * userPalette, const char * use
   // count the number of sequences
   int i = 0;
   for( i = 0; (this->sequences[ i ] != LLCA_END)  && (i<100) ; i++ );
-  Serial.println( i );
+  //Serial.println( i );
   this->nSequences = i;
 
   this->SequenceSet( 0 );
@@ -154,9 +154,11 @@ int LLColorAnimator::SequenceSet( int seqNo )
   this->FrameLoad();
   this->startTime = millis();
 
+  /*
   Serial.print( F( "Sequence " ));
   Serial.print( this->currSequenceNo );
   Serial.println( this->currSequence );
+  */
   return this->currSequenceNo;
 }
 
@@ -218,12 +220,12 @@ void LLColorAnimator::FrameLoad( void )
     }
 
 
-    Serial.print( this->currFrame[i] );
+    //Serial.print( this->currFrame[i] );
     
     this->frameSize = i;
   }
   this->frameSize++;
-  Serial.println();
+  //Serial.println();
 }
 
 // FrameNext

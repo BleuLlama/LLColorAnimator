@@ -18,10 +18,10 @@ const char seq_cylon[]  =
   "--R----|"
   "-R-----|";
 
+  /*
 const char seq_fireworks[]  =
   "-|"
   "W---------------|"
-  /*
   "YW--------------|"
   "-YW-------------|"
   "--YW------------|"
@@ -39,7 +39,6 @@ const char seq_fireworks[]  =
   "--O---------O---|"
   "-|";
 */
-;
 
   // expand from center
 const char seq_expanding[]  = 
@@ -155,7 +154,7 @@ const char * sequences[] = {
   seq_fairy_traditional,
   seq_fairy_cycling,
   
-  seq_fireworks,
+  //seq_fireworks,
   seq_jasper_catterpillar,
   
   seq_sensor_maze,

@@ -11,12 +11,13 @@
 ////////////////////////////////////////////////////////////////
 
 class Button {
-  private:
+  protected:
     int pin;
     bool isPressing;
     bool wasPressed;
     bool wasStarted;
     unsigned long nextWait;
+    unsigned long startTime;
     
   public:
     Button( int _pin );
@@ -26,8 +27,32 @@ class Button {
     void Poll( void );
     bool WasStarted( void );
     bool WasPressed( void );
+    bool IsPressing( void ) { return this->isPressing; }
+    unsigned long StartTime( void ) { return this->startTime; }
 };
 
+#define kTempoCt (8)
+
+class TapTempo: public Button {
+  private:
+    unsigned long taps[ kTempoCt ];
+    unsigned long previousStartTime;
+    unsigned long lastGet = 0;
+  
+  public:
+    TapTempo( int _pin );
+
+  private:
+    void AddNow();
+
+  public:
+    void Clear();
+    void Dump();
+
+  public:
+    void Poll( void );
+    unsigned long Get( void );
+};
 
 ////////////////////////////////////////////////////////////////
 

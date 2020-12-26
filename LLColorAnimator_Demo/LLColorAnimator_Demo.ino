@@ -10,6 +10,8 @@
 //
 //  A1 --- Button A --- [gnd]     (previous sequence)
 //  A0 --- Button B --- [gnd]     (next sequence)
+//  A4 --- Button C --- [gnd]     (tap tempo)
+//  A5 --- Button D --- [gnd]     (flash/accent)
 //
 //  A2 --- 10k pot wiper          (animation speed)
 //  A3 --- 10k pot wiper          (display brightness)
@@ -77,10 +79,14 @@ Adafruit_WS2801 strip = Adafruit_WS2801(kNumberOfLights, kWS2801_Data, kWS2801_C
 
 #define kButtonA  (A1)
 #define kButtonB  (A0)
+#define kButtonC  (A4)
+#define kButtonD  (A5)
 
 // helper classes
 Button buttonA = Button( kButtonA );
 Button buttonB = Button( kButtonB );
+TapTempo buttonC = TapTempo( kButtonC );
+Button buttonD = Button( kButtonD );
 
 
 Settings settings = Settings();
@@ -129,7 +135,6 @@ float getBrightness()
   return( b );
 }
 
-
 int pollButtons()
 {
   int seq = 0;
@@ -153,10 +158,64 @@ int pollButtons()
     buttonHandled = 1;
   }
 
+  // button C is tap tempo
+  buttonC.Poll();
+
+  // button D triggers a flash
+  buttonD.Poll();
+  if( buttonD.IsPressing() ) {
+      
+      while( buttonD.StartTime() ) {
+        unsigned long dt = millis() - buttonD.StartTime();
+        
+        if( dt > 100 ) {
+          fillPixels( 0 );
+        } else {
+          dt = 100-(dt);
+          /*
+          if( buttonD.PressCount() & 1 ) {
+            fillPixelsAlternating( COLOR( dt,dt,dt ), 0 );
+          } else {
+            fillPixelsAlternating( 0, COLOR( dt,dt,dt ) );
+          }*/
+          fillPixels( COLOR( dt, dt, dt ));
+          
+        }
+        buttonD.Poll();
+
+        // check for buttonC + buttonD to reset the tap tempo
+        buttonC.Poll();
+        if( buttonC.IsPressing() ) {
+          buttonC.Clear();
+        }
+      }
+
+  }
+
   if ( buttonHandled ) {
     return 1;
   }
   return 0;
+}
+
+void fillPixels( uint32_t c ) 
+{
+  for (uint16_t i = 0; i < strip.numPixels(); i++ ) {
+    strip.setPixelColor( i, c );
+  }
+  strip.show();
+}
+
+void fillPixelsAlternating( uint32_t c1, uint32_t c2 )
+{
+  for (uint16_t i = 0; i < strip.numPixels(); i++ ) {
+    if( i & 1 ) {
+      strip.setPixelColor( i, c1 );
+    } else {
+      strip.setPixelColor( i, c2 );
+    }
+  }
+  strip.show();
 }
 
 void renderPixels()
@@ -171,7 +230,15 @@ void loop() {
   digitalWrite( LED_BUILTIN, millis() & 0x80 );
   pollButtons();
 
-  ca.DurationA( analogRead( kKnobA ));
+
+  int d = buttonC.Get();
+  if( d == 0 ) {
+    ca.DurationA( analogRead( kKnobA ));
+  } else {
+    ca.DurationA( d );  // if you want to be tapping whole notes of 4/4 time, then divide by 4
+  }
+
+  
   ca.Brightness( getBrightness( ));
   ca.Update();
   renderPixels();
