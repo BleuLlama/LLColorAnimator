@@ -182,12 +182,6 @@ int pollButtons()
           
         }
         buttonD.Poll();
-
-        // check for buttonC + buttonD to reset the tap tempo
-        buttonC.Poll();
-        if( buttonC.IsPressing() ) {
-          buttonC.Clear();
-        }
       }
 
   }
