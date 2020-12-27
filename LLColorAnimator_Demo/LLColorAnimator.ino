@@ -3,6 +3,23 @@
 #include <avr/pgmspace.h>
 #include "LLColorAnimator.h"
 
+
+// here's a macro we'll use to access the sequence data
+// we do it this way since we can have sequences in 
+// progmem (flash) or RAM, defineable at build time.
+
+#ifdef SEQUENCES_IN_PROGMEM
+  #define FRAMEP( I ) \
+    (uint8_t) pgm_read_byte_near( this->currFrame + (I) )
+
+#else
+  #define FRAMEP( I ) \
+    (uint8_t) this->currFrame[ (I) ]
+    
+#endif
+
+
+
 LLColorAnimator::LLColorAnimator( const uint32_t * userPalette, const char * userSequences[] )
   : palette( userPalette )
   , sequences( userSequences )
@@ -53,6 +70,7 @@ void LLColorAnimator::Dump( void )
     Serial.println( buf );
   }
 
+/*
   Serial.println( F( "Sequences:" ));
   for( int i=0;
         this->sequences[i] != LLCA_END
@@ -62,6 +80,7 @@ void LLColorAnimator::Dump( void )
     Serial.print( buf );
     Serial.println( this->sequences[i] );
   }
+  */
 }
 
 
@@ -109,6 +128,18 @@ uint32_t LLColorAnimator::GetColor( int pos )
       // remap to the colors in the list.
     }
      
+  }
+
+  else if( this->animationMode == kMode_Phazer ) {
+    // "z-WCBD|";
+    //  012345
+
+    ccidx = 1;
+    unsigned long zp = (this->frameTick + 50 - pos) % 30;
+
+    if( zp < (this->frameSize-2)) {
+      ccidx = zp + 2;
+    }
   }
   
   else if( this->animationMode == kMode_ArcticTwilight ) {
@@ -188,12 +219,16 @@ void LLColorAnimator::FrameLoad( void )
 {
   int offset = 0;
   
-  if( this->currFrame[0] == kMode_SensorMaze ) {
+  if( FRAMEP( 0 ) == kMode_SensorMaze ) {
     this->animationMode = kMode_SensorMaze;
     offset = 1;
   }
-  else if( this->currFrame[0] == kMode_ArcticTwilight ) {
+  else if( FRAMEP( 0 ) == kMode_ArcticTwilight ) {
     this->animationMode = kMode_ArcticTwilight;
+    offset = 1;
+    
+  } else if( FRAMEP( 0 ) == kMode_Phazer ) {
+    this->animationMode = kMode_Phazer;
     offset = 1;
     
   } else {
@@ -205,8 +240,8 @@ void LLColorAnimator::FrameLoad( void )
   // move check for frame render type in here
   for( int i=offset ;
            (i < kMaxFrameSize)
-        && (this->currFrame[i] != '|') 
-        && (this->currFrame[i] != '\0')
+        && (FRAMEP( i ) != '|') 
+        && (FRAMEP( i ) != '\0')
         ; i++ )
   {
     this->currColors[ i ] = 0L; // if not found, it'll be black
@@ -214,18 +249,20 @@ void LLColorAnimator::FrameLoad( void )
       ; this->palette[p] != LLCA_END
       ; p++ )
     {
-      if( LLCA_COLOR_ID( this->palette[p] ) == this->currFrame[i] ) {
+      if( LLCA_COLOR_ID( this->palette[p] ) == FRAMEP( i ) ) {
         this->currColors[ i ] = LLCA_COLOR_C( this->palette[p] );
       }
     }
 
 
-    //Serial.print( this->currFrame[i] );
+    //Serial.print( FRAMEP( i ) );
     
     this->frameSize = i;
   }
   this->frameSize++;
-  //Serial.println();
+
+  
+  ///Serial.println( this->frameSize);
 }
 
 // FrameNext
@@ -234,17 +271,17 @@ void LLColorAnimator::FrameNext( void )
 {
   int i = 0;
 
-  while(     this->currFrame[i] != '|' 
-          && this->currFrame[i] != '\0' )
+  while(     FRAMEP( i ) != '|' 
+          && FRAMEP( i ) != '\0' )
   {
     i++;
   }
   
-  if( this->currFrame[i] == '|' ) {
+  if( FRAMEP( i ) == '|' ) {
     i++; // go to the next byte. (end of string)
   }
 
-  if( this->currFrame[i] == '\0' ) {
+  if( FRAMEP( i ) == '\0' ) {
     // end of the frame list, loop around
     this->currFrame = this->currSequence;
   } else {

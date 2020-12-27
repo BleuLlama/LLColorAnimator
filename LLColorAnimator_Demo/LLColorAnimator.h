@@ -29,6 +29,7 @@
 #define kMode_Pattern        ('p')  // "RGB|"  or "pRGB"
 #define kMode_ArcticTwilight ('a')  // "aBW|"
 #define kMode_SensorMaze     ('s')  // "sROYGV|"
+#define kMode_Phazer         ('z')  // "zWCCB|"
 
 class LLColorAnimator {
   // data

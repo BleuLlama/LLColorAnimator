@@ -3,26 +3,12 @@
 //
 //	Pattern manager and runtime for Addressable LED strands
 //
-// HARDWARE CONFIGURATION:
-//
-//  D11 --- WS2801 Clock (GREEN)
-//  D12 --- WS2801 Data (WHITE)
-//
-//  A1 --- Button A --- [gnd]     (previous sequence)
-//  A0 --- Button B --- [gnd]     (next sequence)
-//  A4 --- Button C --- [gnd]     (tap tempo)
-//  A5 --- Button D --- [gnd]     (flash/accent)
-//
-//  A2 --- 10k pot wiper          (animation speed)
-//  A3 --- 10k pot wiper          (display brightness)
-//    pot poles are wired to +5v on one side, ground on the other
-//
-//
 //  2020-12-20  - initial version
 
-#define kVersion "LCADemo - 2020-12-20"
+#define kVersion "LCADemo - 2020-12-27"
 
 #include "header.h"
+
 
 /*****************************************************************************
    Color Anomator configuration
@@ -30,24 +16,7 @@
 
 #include "LLColorAnimator.h"
 
-const unsigned long palette[12] = {
-  LLCA_COLOR( 'W', 100, 192, 192 ),
-  LLCA_COLOR( '-',   0,   0,   0 ),
-  LLCA_COLOR( 'R', 192,   0,   0 ),
-  LLCA_COLOR( 'O', 100,  20,   0 ),
-  LLCA_COLOR( 'Y', 192, 100,   0 ),
-  LLCA_COLOR( 'G',   0, 192,   0 ),
-  LLCA_COLOR( 'C',   0, 192,  80 ),
-  LLCA_COLOR( 'B',   0,   0,  90 ),
-  LLCA_COLOR( 'P', 100,   0,  30 ),
-  
-  LLCA_COLOR( 'V', 100,   0, 100 ),
-  
-  LLCA_COLOR( 'D',   0,   0,   2 ), // dark blue
-  LLCA_END
-};
-
-
+extern const unsigned long palette[];
 extern const char * sequences[];
 
 LLColorAnimator ca = LLColorAnimator( palette, sequences );
@@ -58,29 +27,8 @@ LLColorAnimator ca = LLColorAnimator( palette, sequences );
 #include <Adafruit_WS2801.h>
 #include <SPI.h>    /* for comms */
 
-/* The strand that I have has four wires:
-     Red    +5v
-     White  Data
-     Green  Clock
-     Blue   Ground
-*/
-#define kNumberOfLights (42)
-
-/* pin configuration on Arduino */
-#define kWS2801_Data  (12)
-#define kWS2801_Clock (11)
-
 /* create our "strip" class */
 Adafruit_WS2801 strip = Adafruit_WS2801(kNumberOfLights, kWS2801_Data, kWS2801_Clock);
-
-
-#define kKnobA (A2)
-#define kKnobB (A3)
-
-#define kButtonA  (A1)
-#define kButtonB  (A0)
-#define kButtonC  (A4)
-#define kButtonD  (A5)
 
 // helper classes
 Button buttonA = Button( kButtonA );
@@ -97,11 +45,11 @@ void setup()
   // serial console setup
   Serial.begin( 115200 );
   
-  Serial.println( F( "v. " kVersion ));
+  Serial.println( F( kVersion ));
 
   ca.AnimRange( kNumberOfLights );
   ca.SequenceSet( settings.Get( kSetting_Pattern ) );
-  ca.Dump();
+  //ca.Dump();
   
   // random setup
   randomSeed( analogRead( 0 ) + analogRead( 1 ) );
