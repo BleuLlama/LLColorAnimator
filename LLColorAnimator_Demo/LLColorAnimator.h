@@ -30,6 +30,7 @@
 #define kMode_ArcticTwilight ('a')  // "aBW|"
 #define kMode_SensorMaze     ('s')  // "sROYGV|"
 #define kMode_Phazer         ('z')  // "zWCCB|"
+#define kMode_RandomFade     ('f')  // "fRGB"
 
 class LLColorAnimator {
   // data

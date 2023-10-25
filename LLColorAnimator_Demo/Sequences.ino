@@ -23,6 +23,10 @@ const unsigned long palette[] = {
   
   LLCA_COLOR( 'D',   0,   0,   2 ), // dark blue
   LLCA_COLOR( 'M',   2,   0,   0 ), // dark red
+  
+  LLCA_COLOR( 'J', 192,  50,   0 ), // LTorange 
+  LLCA_COLOR( 'K', 255,  30,   0 ), // LTorange 
+  LLCA_COLOR( 'L', 255,  70,   0 ), // LTorange 
   LLCA_END  // end of the list sentinel
 };
 
@@ -33,16 +37,34 @@ const unsigned long palette[] = {
 // these are just char strings where each frame is separated by a pipe |
 // the end of the string signifies the end of the frame list, after a pipe |
 
+// the first character can be a special pattern display identifier:
+//  z - phaser.  the single frame moves down the entire line of lights
+//  s - Sensor Maze tunnel style,  colors roll down the line
+//  a - arctic twilight - dim colors defined as color[0], one pops bright to color [1]
+
 const char seq_all_off[]            SEQLOC = "-|";
 const char seq_yellow_4_marquee[]   SEQLOC = "Y---|-Y--|--Y-|---Y|";
+const char seq_yellow_purple_marquee[]   SEQLOC = 
+  "O---P---|"
+  "-O---P--|"
+  "--O---P-|"
+  "---O---P|"
+  "P---O---|"
+  "-P---O--|"
+  "--P---O-|"
+  "---P---O|";
 const char seq_cyan_5_marquee[]     SEQLOC = "CC---|-CC--|--CC-|---CC|C---C|";
   
-
+// group of colors, flowing down the whole line
 const char seq_phazer[]             SEQLOC = "z-YCBDD|";
 const char seq_phazer2[]            SEQLOC = "z-WVBGYORM|";
+const char seq_phazerxmas[]         SEQLOC = "z-GGYRRM|";
   
 const char seq_xmas_twinkle[]       SEQLOC = "RG|GR|";
 const char seq_xmas_marquee[]       SEQLOC = "RG----|-RG---|--RG--|---RG-|----RG|G----R|";
+const char seq_xmas_marquee1[]       SEQLOC = "R---G---|-R---G--|--R---G-|---R---G|G---R---|-G---R--|--G---R-|---G---R|";
+const char seq_xmas_marquee2[]       SEQLOC = "RGGG|GRGG|GGRG|GGGR|";
+const char seq_xmas_marquee3[]       SEQLOC = "GRRR|RGRR|RRGR|RRRG|";
 
 const char seq_fairy_traditional[]  SEQLOC = "GRPOB|";
 const char seq_fairy_cycling[]      SEQLOC = "GRPOB|BGRPO|OBGRP|POBGR|RPOBG|";
@@ -172,7 +194,60 @@ const char seq_jasper_catterpillar[] SEQLOC =
   "B----GGG|"
   "B-----GG|"
   "B------G|";
+  
+const char seq_jasper_catterpillarXMAS[] SEQLOC =
+  "R-------|"
+  "GR------|"
+  "GGR-----|"
+  "GGGR----|"
+  "GGGGR---|"
+  "GGGGGR--|"
+  "GGGGGGR-|"
+  "GGGGGGGR|"
+  "RGGGGGGG|"
+  "R-GGGGGG|"
+  "R--GGGGG|"
+  "R---GGGG|"
+  "R----GGG|"
+  "R-----GG|"
+  "R------G|";
+  
+const char seq_jasper_catterpillarXMAS2[] SEQLOC =
+  "G-------|"
+  "GR------|"
+  "GGR-----|"
+  "GGGR----|"
+  "GGGGR---|"
+  "GGGGGR--|"
+  "GGGGGGR-|"
+  "GGGGGGGR|"
+  "RGGGGGGG|"
+  "R-GGGGGG|"
+  "R--GGGGG|"
+  "R---GGGG|"
+  "R----GGG|"
+  "R-----GG|"
+  "R------G|"
+  "R-------|"
+  "RG------|"
+  "RRG-----|"
+  "RRRG----|"
+  "RRRRG---|"
+  "RRRRRG--|"
+  "RRRRRRG-|"
+  "RRRRRRRG|"
+  "GRRRRRRR|"
+  "G-RRRRRR|"
+  "G--RRRRR|"
+  "G---RRRR|"
+  "G----RRR|"
+  "G-----RR|"
+  "G------R|"
+  ;
 
+
+const char seq_dickens1[]        SEQLOC =  "YY00|YO00|YO00|OO00|0Y00|YO00|OY00|";
+//"0OOY|JKLY|KLYJ|L0JK|YJKL|JK0O|KLYJ|LYJK|";
 
 
 const char * sequences[] = {
@@ -181,12 +256,19 @@ const char * sequences[] = {
   seq_color_flash,
   
   seq_yellow_4_marquee,
+  seq_yellow_purple_marquee,
   seq_cyan_5_marquee,
   seq_expanding,
   seq_build_breakdown,
   
   seq_xmas_twinkle,
   seq_xmas_marquee,
+  seq_xmas_marquee1,
+  seq_xmas_marquee2,
+  seq_xmas_marquee3,
+  seq_jasper_catterpillarXMAS,
+  seq_jasper_catterpillarXMAS2,
+  seq_phazerxmas,
   seq_fairy_traditional,
   seq_fairy_cycling,
   
@@ -197,9 +279,12 @@ const char * sequences[] = {
   
   seq_arctic_twilight,
 
-  seq_crawler,
-  seq_phazer,
+  seq_crawler, // colors crawl and change
+  
+  seq_phazer,  
   seq_phazer2,
+  
+  seq_dickens1,
   
   LLCA_END
 };

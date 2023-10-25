@@ -129,6 +129,9 @@ uint32_t LLColorAnimator::GetColor( int pos )
     }
      
   }
+  else if( this->animationMode == kMode_RandomFade ) {
+    
+  }
 
   else if( this->animationMode == kMode_Phazer ) {
     // "z-WCBD|";
@@ -167,9 +170,18 @@ uint32_t LLColorAnimator::GetColor( int pos )
 
   uint32_t c = this->currColors[ ccidx % this->frameSize ];
 
+  float bxx = this->brightness;
+  this->brightness = this->brightness * 1.5;
+
   r = (int) (this->brightness * (float)LLCA_COLOR_R( c ));
   g = (int) (this->brightness * (float)LLCA_COLOR_G( c ));
   b = (int) (this->brightness * (float)LLCA_COLOR_B( c ));
+
+  this->brightness = bxx;
+
+  if( r > 255 ) r = 255;
+  if( g > 255 ) g = 255;
+  if( b > 255 ) b = 255;
 
   return COLOR( r, g, b );
   //return LLCA_COLOR_C( this->currColors[ pos % this->frameSize ] ); 
@@ -218,6 +230,11 @@ int LLColorAnimator::SequencePrev( void )
 void LLColorAnimator::FrameLoad( void )
 {
   int offset = 0;
+
+  if( FRAMEP( 0 ) == kMode_RandomFade ) {
+     this->animationMode = kMode_RandomFade;
+     offset = 1;
+  }
   
   if( FRAMEP( 0 ) == kMode_SensorMaze ) {
     this->animationMode = kMode_SensorMaze;
