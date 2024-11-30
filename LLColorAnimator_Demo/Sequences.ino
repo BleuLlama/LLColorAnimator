@@ -41,6 +41,9 @@ const unsigned long palette[] = {
 //  z - phaser.  the single frame moves down the entire line of lights
 //  s - Sensor Maze tunnel style,  colors roll down the line
 //  a - arctic twilight - dim colors defined as color[0], one pops bright to color [1]
+//  m - arcade machine simulation
+//  c - candles!
+//  h - haunted display
 
 const char seq_all_off[]            SEQLOC = "-|";
 const char seq_yellow_4_marquee[]   SEQLOC = "Y---|-Y--|--Y-|---Y|";
@@ -59,7 +62,7 @@ const char seq_cyan_5_marquee[]     SEQLOC = "CC---|-CC--|--CC-|---CC|C---C|";
 const char seq_phazer[]             SEQLOC = "z-YCBDD|";
 const char seq_phazer2[]            SEQLOC = "z-WVBGYORM|";
 const char seq_phazerxmas[]         SEQLOC = "z-GGYRRM|";
-  
+
 const char seq_xmas_twinkle[]       SEQLOC = "RG|GR|";
 const char seq_xmas_marquee[]       SEQLOC = "RG----|-RG---|--RG--|---RG-|----RG|G----R|";
 const char seq_xmas_marquee1[]       SEQLOC = "R---G---|-R---G--|--R---G-|---R---G|G---R---|-G---R--|--G---R-|---G---R|";
@@ -69,7 +72,7 @@ const char seq_xmas_marquee3[]       SEQLOC = "GRRR|RGRR|RRGR|RRRG|";
 const char seq_fairy_traditional[]  SEQLOC = "GRPOB|";
 const char seq_fairy_cycling[]      SEQLOC = "GRPOB|BGRPO|OBGRP|POBGR|RPOBG|";
 const char seq_color_flash[]        SEQLOC = "R|O|Y|G|C|B|P|";
-const char seq_rainbow[]            SEQLOC = "ROYGCBP|";
+const char seq_rainbow[]            SEQLOC = "ROYGCBP|OYGCBPR|YGCBPRO|GCBPROY|CBPROYG|BPROYGC|PROYGCB|";
 const char seq_sensor_maze[]        SEQLOC = "s-ROYGV|";
 
 const char seq_arctic_twilight[]    SEQLOC = "aDW|";
@@ -244,47 +247,170 @@ const char seq_jasper_catterpillarXMAS2[] SEQLOC =
   "G-----RR|"
   "G------R|"
   ;
+const char seq_catterpillarXMAS3[] SEQLOC =
+  "G-----|"
+  "GR----|"
+  "GGR---|"
+  "GGGR--|"
+  "-GGR--|"
+  "--GR--|"
+  "---R--|"
+  "---RG-|"
+  "---RRG|"
+  "G--RRR|"
+  "G---RR|"
+  "G----R|"
+  ;
 
 
-const char seq_dickens1[]        SEQLOC =  "YY00|YO00|YO00|OO00|0Y00|YO00|OY00|";
-//"0OOY|JKLY|KLYJ|L0JK|YJKL|JK0O|KLYJ|LYJK|";
+/*
 
+const char seq_catterpillarXMAS4[] SEQLOC =
+  // Really a marquee.
+  "GGG-RRR---|"
+  "--GGG-RRR-|"
+  "---GGG-RRR|"
+  "R---GGG-RR|"
+  "RR---GGG-R|"
+  "RRR---GGG-|"
+  "-RRR---GGG|"
+  "G-RRR---GG|"
+  "GG-RRR---G|"
+;
+*/
+
+const char seq_catterpillarXMAS4[] SEQLOC =
+  "GGG--RRR--|"
+  "-GG---RR--|"
+  "-GGG--RRR-|"
+  "--GG---RR-|"
+  "--GGG--RRR|"
+  "---GG---RR|"
+  "R--GGG--RR|"
+  "R---GG---R|"
+  "RR--GGG--R|"
+  "RR---GG---|"
+  
+  "RRR--GGG--|"
+  "-RR---GG--|"
+  "-RRR--GGG-|"
+  "--RR---GG-|"
+  "--RRR--GGG|"
+  "---RR---GG|"
+  "G--RRR--GG|"
+  "G---RR---G|"
+  "GG--RRR--G|"
+  "GG---RR---|"
+  "GGG--RRR--|"
+  ;
+
+const char seq_xmas_xcross[] SEQLOC = 
+  "RR-----GG-|"
+  "-RR---GG--|"
+  "--RR-GG---|"
+  "---RYG----|"
+  "---GYR----|"
+  "--GG-RR---|"
+  "-GG---RR--|"
+  "GG-----RR-|"
+  "G-------RY|"
+  "R-------GY|"
+  ;
+  
+
+const char seq_arcade[]  SEQLOC = "m"; // special case for arcade machine
+const char seq_candles[]  SEQLOC = "c"; // special case for candle use
+const char seq_lightning[]  SEQLOC = "l"; // special case for lightning use
+const char seq_haunt[]  SEQLOC = "h"; // special case for haunted display use
+
+const char * seq_names[] = {
+  "Off",
+  "Rainbo",
+  "C.flash",
+  "Y4 mrq",
+  "YP mrq",
+  "C5 mrq",
+  "expand",
+  "bld.bkd",
+
+  "xmas.Tw",
+  "xmas.M0",
+  "xmas.M1",
+  "xmas.M2",
+  "xmas.M3",
+  
+  "x.Cat 1",
+  "x.Cat 2",
+  "x.Cat 3",
+  "x.Cat 4",
+  "x.Phasr",
+  "G>> <<R",
+  "Fairy.t",
+  "Fairy.c",
+
+#ifndef kLowMemory
+  "Firwork",
+  "catter",
+  "sensor",
+  "arctic",
+  "crawlr",
+  "phasr1",
+  "phasr2",
+  "arcade",
+  "cndle.1",
+  "lghtng",
+  "haunt"
+#endif
+};
+
+const char * getSeqName( int idx ) 
+{
+  return seq_names[ idx ];
+}
 
 const char * sequences[] = {
-  seq_all_off,
-  seq_rainbow,
-  seq_color_flash,
+  seq_all_off,      // 0
+  seq_rainbow,      // 1
+  seq_color_flash,  // 2
   
-  seq_yellow_4_marquee,
+  seq_yellow_4_marquee,     // 3
   seq_yellow_purple_marquee,
   seq_cyan_5_marquee,
   seq_expanding,
   seq_build_breakdown,
   
-  seq_xmas_twinkle,
+  seq_xmas_twinkle,   // 8
   seq_xmas_marquee,
   seq_xmas_marquee1,
   seq_xmas_marquee2,
   seq_xmas_marquee3,
+  
   seq_jasper_catterpillarXMAS,
   seq_jasper_catterpillarXMAS2,
+  seq_catterpillarXMAS3, // 15
+  seq_catterpillarXMAS4, // 16
   seq_phazerxmas,
+  seq_xmas_xcross, // 18
   seq_fairy_traditional,
   seq_fairy_cycling,
   
-  seq_fireworks,
+#ifndef kLowMemory
+  seq_fireworks,          // 21
   seq_jasper_catterpillar,
   
-  seq_sensor_maze,
+  seq_sensor_maze,    // 23
   
-  seq_arctic_twilight,
+  seq_arctic_twilight,  // 24 *revisit* // "aDW|";
 
-  seq_crawler, // colors crawl and change
+  seq_crawler, // 25 colors crawl and change
   
-  seq_phazer,  
-  seq_phazer2,
+  seq_phazer,   // 26  blast
+  seq_phazer2,  // 27  rainbow blast
   
-  seq_dickens1,
-  
+  seq_arcade,   // 28
+  seq_candles,  // 29
+  seq_lightning,  // 30 // "lDW|";
+  seq_haunt,       // 31 haunted display 
+#endif
   LLCA_END
 };

@@ -1,5 +1,3 @@
-
-
 #ifndef __HEADER_H__
 #define __HEADER_H__
 
@@ -10,9 +8,82 @@
 
 
 ////////////////////////////////////////////////////////////////
-// Settings
+// Build Config
 
+// pick the strand to use
+#define kStrand_WS2801      // 4-wire
+//#define kStrand_NeoPixel    // 3-wire
 
+#define kNumberOfLights (80)        // # lights in the strand
+
+// pick the platform
+//#define kHARDWARE_UNO_FIXED
+#define kHARDWARE_UNO
+//#define kHARDWARE_LEONARDO
+//#define kHARDWARE_MEGA
+//#define kHARDWARE_GENERIC
+
+////////////////////////////////////////////////////////////////
+
+// set up general config for the platforms...
+#ifdef kHARDWARE_UNO
+  /* x */ #undef kUSE_ANALOG_KNOBS    // has analog knobs
+  #undef kUSE_BUTTONS_FOR_SPEED
+  
+  #undef kButtonDFunction_Brightness
+  /* x */ #undef kButtonDFunction_Flash // button does flash effect brightness
+  #undef kUseDisplay
+
+  //#define kFixed_Speed_Value   (150)
+  #define kFixed_Brightness   (0.5)
+
+  #define kLowMemory
+#endif // kHARDWARE_UNO
+
+// Uno hardware with no inputs
+#ifdef kHARDWARE_UNO_FIXED
+  #define kFixed_Sequence_Value (18)
+  #define kFixed_Speed_Value   (150)
+  #undef kUSE_ANALOG_KNOBS    // has analog knobs
+  #undef kUSE_BUTTONS_FOR_SPEED
+  
+  #undef kButtonDFunction_Brightness
+  #undef kButtonDFunction_Flash // button does flash effect brightness
+  #undef kUseDisplay
+
+  #define kLowMemory
+#endif // kHARDWARE_UNO_FIXED
+
+#ifdef kHARDWARE_LEONARDO
+  #undef kUSE_ANALOG_KNOBS    // no analog knobs
+  #define kUSE_BUTTONS_FOR_SPEED // speed done by controller buttons
+  
+  #define kButtonDFunction_Brightness // button controls brightness
+  #undef kButtonDFunction_Flash
+  #undef kUseDisplay
+#endif // kHARDWARE_LEONARDO
+
+#ifdef kHARDWARE_GENERIC
+  #undef kUSE_ANALOG_KNOBS    // no analog knobs
+  #define kUSE_BUTTONS_FOR_SPEED // speed done by controller buttons
+  
+  #define kButtonDFunction_Brightness // button controls brightness
+  #undef kButtonDFunction_Flash
+  #undef kUseDisplay
+#endif // kHARDWARE_GENERIC
+
+#ifdef kHARDWARE_MEGA
+  #define kUSE_ANALOG_KNOBS    // analog knobs
+  #define kUSE_ANALOG_BUTTONS  // analog input for multibuttons
+  
+  #undef kButtonDFunction_Brightness // button controls brightness
+  #define kButtonDFunction_Flash
+
+  #define kUseDisplay
+#endif // kHARDWARE_MEGA
+
+////////////////////////////////////////////////////////////////
+// Addtl Settings
 
 // are the sequences in PROGMEM (flash)?
 // Probably worthwhile to do...
@@ -25,12 +96,9 @@
 #endif
 
 
-// what does button D do?
-#define kButtonDFunction_Flash
-#undef kButtonDFunction_Brightness
-
 ////////////////////////////////////////////////////////////////
 // Hardware Configuration (Uno)
+//
 //    4-wire LEDs
 //  GND                  (BLUE)
 //  D11 --- WS2801 Clock (GREEN)
@@ -77,67 +145,108 @@
   D16 Rotary button
   
  */
-#undef kHARDWARE_UNO
-#define kHARDWARE_LEONARDO
+
+ 
 /* The strand that I have has four wires:
      Red    +5v
      White  Data
      Green  Clock
      Blue   Ground
 */
-#define kNumberOfLights (14)        // # lights in the strand
 
-#ifdef kHARDWARE_UNO
-/* pin configuration on Arduino */
-#define kWS2801_Data  (12)    // data line (white wire)
-#define kWS2801_Clock (11)    // clock line (green wire)
+// features per platform
 
-/* and for neopixel use */
-#define kNeoPixelPin  (12)    // data out
+#if defined(kHARDWARE_UNO) or defined(kHARDWARE_UNO_FIXED)
+  // UNO adjustable or UNO fixed.
 
-#define kStrand_WS2801      // 4-wire
-//#define kStrand_NeoPixel    // 3-wire
+  /* pin configuration on Arduino */
+  #define kWS2801_Data  (11)    // data line (white wire)
+  #define kWS2801_Clock (12)    // clock line (green wire)
+  
+  /* and for neopixel use */
+  #define kNeoPixelPin  (12)    // data out
 
-
-#ifdef kUSE_ANALOG_KNOBS
-#define kKnobA (A2)     // Duration / update interval
-#define kKnobB (A3)     // Brightness
+  
+  #ifdef kUSE_ANALOG_KNOBS
+    #define kKnobA (A2)     // Duration / update interval
+    #define kKnobB (A3)     // Brightness
+  #endif
+  
+  
+  #define kButtonA  (A0)  // previous sequence
+  #define kButtonB  (7)  // next sequence
+  #define kButtonC  (5)  // tap-tempo
+  #define kButtonD  (A5)  // flash/accent or brightness
+  
+  #define kButtonMode (A6)
 #endif
-#undef kUSE_BUTTONS_FOR_SPEED
 
 
-#define kButtonA  (A1)  // previous sequence
-#define kButtonB  (A0)  // next sequence
-#define kButtonC  (A4)  // tap-tempo
-#define kButtonD  (A5)  // flash/accent or brightness
 
-#define kButtonMode (A6)
+#ifdef kHARDWARE_MEGA
 
-#endif
+  // shortcuts to remember which buttons are which
+  #define kPinTopLeft_D (12)
+  #define kPinTopLeft_C (11)
+
+  #define kPinTopRight_D (9)
+  #define kPinTopRight_C (8)
+
+  #define kPinBotRight_D (7)
+  #define kPinBotRight_C (6)
+
+
+  #define kNeoPixelPin  (12)
+  /* pin configuration on Arduino */
+  #define kWS2801_Data  (kPinTopLeft_D)    // data line (white wire)
+  #define kWS2801_Clock (kPinTopLeft_C)    // clock line (green wire)
+
+  #define kInvertKnobB
+  
+  #define kKnobA (A1)     // Duration / update interval
+  #define kKnobB (A2)     // Brightness
+
+  #define kButtonSlower (8) // (B NW)
+  #define kButtonFaster (9) // (A NE)
+  
+  #define kAnalogButton (A0)
+
+  // settings for display
+  #define kDisplayPinClk  (4)
+  #define kDisplayPinData (5)
+
+#endif // kHARDWARE_MEGA
+
+
+#ifdef kHARDWARE_GENERIC
+  #define kNeoPixelPin  (6)
+  
+  #define kButtonSlower (8) // (B NW)
+  #define kButtonFaster (9) // (A NE)
+  
+  #define kButtonA  (10)  // (LEFT) previous sequence
+  #define kButtonB  (11)  // (RIGHT) next sequence
+  
+  #define kButtonC  (A0)  // (E SW) tap-tempo
+  #define kButtonD  (A1)   // (DOWN) flash/accent
+  #define kButtonMode (A2) // (D SE) view mode change
+  
+#endif // kHARDWARE_GENERIC
 
 
 #ifdef kHARDWARE_LEONARDO
-
-#define kStrand_NeoPixel    // 3-wire LEDs
-#define kNeoPixelPin  (1)   // (UP) data out
-#undef kUSE_ANALOG_KNOBS    // no analog knobs
-
-#define kUSE_BUTTONS_FOR_SPEED
-
-#define kButtonSlower (A1) // (B NW)
-#define kButtonFaster (A2) // (A NE)
-
-#define kButtonA  (11)  // (LEFT) previous sequence
-#define kButtonB  (A0)  // (RIGHT) next sequence
-
-#define kButtonC  (10)  // (E SW) tap-tempo
-#define kButtonD  (6)   // (DOWN) flash/accent
-#define kButtonMode (9) // (D SE) view mode change
-
-// setup button D use (down)
-#define kButtonDFunction_Brightness
-#undef kButtonDFunction_Flash
-#endif
+  #define kNeoPixelPin  (2)   // (UP) data out
+  
+  #define kButtonSlower (A1) // (B NW)
+  #define kButtonFaster (A2) // (A NE)
+  
+  #define kButtonA  (11)  // (LEFT) previous sequence
+  #define kButtonB  (A0)  // (RIGHT) next sequence
+  
+  #define kButtonC  (10)  // (E SW) tap-tempo
+  #define kButtonD  (6)   // (DOWN) flash/accent
+  #define kButtonMode (9) // (D SE) view mode change
+#endif // kHARDWARE_LEONARDO
 
 
 

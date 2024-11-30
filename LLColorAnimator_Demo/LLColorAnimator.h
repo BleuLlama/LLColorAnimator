@@ -1,4 +1,3 @@
-
 #ifndef __LLCOLORANIMATOR_H__
 #define __LLCOLORANIMATOR_H__
 
@@ -31,6 +30,7 @@
 #define kMode_SensorMaze     ('s')  // "sROYGV|"
 #define kMode_Phazer         ('z')  // "zWCCB|"
 #define kMode_RandomFade     ('f')  // "fRGB"
+#define kMode_Haunt          ('h')  // "h"
 
 class LLColorAnimator {
   // data
@@ -50,6 +50,8 @@ class LLColorAnimator {
 
   int animVal;
   int animRange;
+
+  char specialMode;
 
   const char * currSequence;
   int nSequences;
@@ -72,6 +74,8 @@ class LLColorAnimator {
     void DurationB( uint32_t v ) { this->durationB = v; }
     void Brightness( float v ) { this->brightness = v; }
     void AnimRange( int v ) { this->animRange = v; }
+
+    char Mode( void ) { return this->specialMode; }
     
   private:
     void ColorsProcess( void );

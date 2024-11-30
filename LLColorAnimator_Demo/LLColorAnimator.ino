@@ -187,6 +187,9 @@ uint32_t LLColorAnimator::GetColor( int pos )
   //return LLCA_COLOR_C( this->currColors[ pos % this->frameSize ] ); 
 }
 
+const char * getSeqName( int idx ) ;
+
+
 int LLColorAnimator::SequenceSet( int seqNo )
 {
   this->currSequenceNo = seqNo % this->nSequences;
@@ -202,6 +205,12 @@ int LLColorAnimator::SequenceSet( int seqNo )
   Serial.print( this->currSequenceNo );
   Serial.println( this->currSequence );
   */
+  
+#ifdef kUseDisplay
+  sprintf( textBuffer, "%6s", getSeqName( seqNo )  );
+  display.setSegments( display.encodeText( textBuffer, encodeBuffer ));
+#endif
+
   return this->currSequenceNo;
 }
 
@@ -231,6 +240,8 @@ void LLColorAnimator::FrameLoad( void )
 {
   int offset = 0;
 
+  this->specialMode = FRAMEP( 0 );
+  
   if( FRAMEP( 0 ) == kMode_RandomFade ) {
      this->animationMode = kMode_RandomFade;
      offset = 1;
