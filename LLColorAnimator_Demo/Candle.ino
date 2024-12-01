@@ -17,17 +17,19 @@ The original code:
 Candle::Candle()
 {
   // setup the color components
-#ifdef k4_Component
-  this->SetColor( 0, 100, 0, 0 );   // red 
-  this->SetColor( 1, 60, 30, 0 );   // orange
-  this->SetColor( 2, 100, 70, 0 );  // yellow
-  this->SetColor( 3, 250, 250, 0 ); // my addition... makes it more yellow, and lets us use a /4 ( >>2 ) to quicken math
-#endif
+  #ifdef k4_Component
+    this->SetColor( 0, 100, 0, 0 );   // red 
+    this->SetColor( 1, 60, 30, 0 );   // orange
+    this->SetColor( 2, 100, 70, 0 );  // yellow
+    this->SetColor( 3, 250, 250, 0 ); // my addition... makes it more yellow, and lets us use a /4 ( >>2 ) to quicken math
+  #endif
 
-#ifdef k2_Component // vaslty simplified
-  this->SetColor( 0, 255, 255, 0 );   // Yellow
-  this->SetColor( 1, 255, 0, 0 );     // Red.  that's it.
-#endif
+  #ifdef k2_Component // vaslty simplified
+    this->SetColor( 0, 255, 255, 0 );   // Yellow
+    this->SetColor( 1, 255, 0, 0 );     // Red.  that's it.
+  #endif
+
+  this->Brightness( 1.0 );
 
   // initialize the animated values we're gonna use
   for( int j = 0 ; j < kNumComponets ; j++ )
@@ -51,9 +53,14 @@ void Candle::SetColor( int idx, uint8_t r, uint8_t g, uint8_t b )
 uint32_t Candle::GetColor( int idx )
 { 
   int r,g,b;
+
+  //this->Brightness
   if( idx >= 0 ) {
     // just return the core components.
-    return( this->MakeColor( this->r[idx] * v[idx]->GetVal(), this->g[idx]* v[idx]->GetVal(), this->b[idx]* v[idx]->GetVal() ));
+    return( this->MakeColor( 
+        this->r[idx] * v[idx]->GetVal() * this->brightness, 
+        this->g[idx]* v[idx]->GetVal() * this->brightness,
+        this->b[idx]* v[idx]->GetVal() * this->brightness ));
   }
 
   // check and update components, toggle fades 
@@ -76,11 +83,15 @@ uint32_t Candle::GetColor( int idx )
     b += this->b[j] * v[j]->GetVal();
   }
 
-  // finally, build the color to return
-#ifdef k2_Component
-  return this->MakeColor( ((int)r)>>1, ((int)g)>>1, ((int)b)>>1 );  // div by 2
-#else
-  return this->MakeColor( ((int)r)>>2, ((int)g)>>2, ((int)b)>>2 );  // div by 4
-#endif
+  r = r * this->brightness; // least impact location to apply brightness
+  g = g * this->brightness;
+  b = b * this->brightness;
+
+    // finally, build the color to return
+  #ifdef k2_Component
+    return this->MakeColor( ((int)r)>>1, ((int)g)>>1, ((int)b)>>1 );  // div by 2
+  #else
+    return this->MakeColor( ((int)r)>>2, ((int)g)>>2, ((int)b)>>2 );  // div by 4
+  #endif
  
 }

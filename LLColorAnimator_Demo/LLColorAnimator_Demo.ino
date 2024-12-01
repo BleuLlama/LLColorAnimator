@@ -3,7 +3,7 @@
 //
 //	Pattern manager and runtime for Addressable LED strands
 //
-//  2024-11-29  - code cleanups, 
+//  2024-11-29  - code cleanups, Brightness applied to candles, uno is (tap) + (next)
 //  2024-11-02  - haunt added for lego haunted mansion
 //  2023-12-05  - xmas caterpillar 3, 4 line leds on mega
 //  2023-10-24  - Support for SSMicro instead of Uno
@@ -11,8 +11,8 @@
 //  2022-01-02  - Support for Neopixels
 //  2020-12-20  - initial version
 
-#define kVersion "LCA - 2024-11-29"
-#define kDisplayVers "24.11.29"
+#define kVersion "LCA - 2024-11-30"
+#define kDisplayVers "24.11.30"
 
 #include "header.h"
 
@@ -61,7 +61,7 @@ LLColorAnimator ca = LLColorAnimator( palette, sequences );
 #endif
 
 
-int buttonSpeed = 100;
+int buttonSpeed = kDefaultSpeed;
 int viewMode = 0;
 int buttonBrightness = 255;
 
@@ -485,7 +485,22 @@ void loop() {
     #endif
 
     for( int i = 0 ; i < kNumberOfLights ; i++ ) {
-      strip.setPixelColor( i, theCandles[i % kNumCandles].GetColor() ); // repeat when there's no more data.
+
+      #ifndef kStrand_NeoPixel
+        theCandles[i % kNumCandles].Brightness( getBrightness() );
+      #endif
+
+      unsigned long cc = theCandles[i % kNumCandles].GetColor();
+
+      #ifdef kStrand_NeoPixel
+        // there is no blue component so ignore that
+        // red
+        cc = (cc & 0x0000ffff) + ( cc & 0x00ff0000 ) >> ; // blue attenuation
+        // green
+        cc = (unsigned long) ((float)cc * brt);
+      #endif
+
+      strip.setPixelColor( i, cc ); // repeat when there's no more data.
     }
     
     strip.show();

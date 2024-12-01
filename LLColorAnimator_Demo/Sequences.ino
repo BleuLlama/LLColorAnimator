@@ -71,6 +71,10 @@ const char seq_xmas_marquee3[]       SEQLOC = "GRRR|RGRR|RRGR|RRRG|";
 
 const char seq_fairy_traditional[]  SEQLOC = "GRPOB|";
 const char seq_fairy_cycling[]      SEQLOC = "GRPOB|BGRPO|OBGRP|POBGR|RPOBG|";
+
+const char seq_fairy_four[]         SEQLOC = "GRBY|";
+const char seq_fairy_four_cycling[] SEQLOC = "GRBY|YGRB|BYGR|RBYG|";
+
 const char seq_color_flash[]        SEQLOC = "R|O|Y|G|C|B|P|";
 const char seq_rainbow[]            SEQLOC = "ROYGCBP|OYGCBPR|YGCBPRO|GCBPROY|CBPROYG|BPROYGC|PROYGCB|";
 const char seq_sensor_maze[]        SEQLOC = "s-ROYGV|";
@@ -347,19 +351,21 @@ const char * seq_names[] = {
   "G>> <<R",
   "Fairy.t",
   "Fairy.c",
+  "Fairy.4",
+  "Fairy4C"
+  "sensor",
+  "cndle.1",
+  "lghtng",
 
 #ifndef kLowMemory
   "Firwork",
   "catter",
-  "sensor",
-  "arctic",
   "crawlr",
   "phasr1",
   "phasr2",
   "arcade",
-  "cndle.1",
-  "lghtng",
-  "haunt"
+  "haunt",
+  //"arctic",
 #endif
 };
 
@@ -393,24 +399,26 @@ const char * sequences[] = {
   seq_xmas_xcross, // 18
   seq_fairy_traditional,
   seq_fairy_cycling,
+  seq_fairy_four,
+  seq_fairy_four_cycling,
+
+  seq_sensor_maze,    // 21
+  seq_candles,  // 22
+  seq_lightning,  // 23 // "lDW|";
   
 #ifndef kLowMemory
-  seq_fireworks,          // 21
+  seq_fireworks,          // 24
   seq_jasper_catterpillar,
-  
-  seq_sensor_maze,    // 23
-  
-  seq_arctic_twilight,  // 24 *revisit* // "aDW|";
 
-  seq_crawler, // 25 colors crawl and change
+  seq_crawler, //  colors crawl and change
   
-  seq_phazer,   // 26  blast
-  seq_phazer2,  // 27  rainbow blast
+  seq_phazer,   //  blast
+  seq_phazer2,  // rainbow blast
   
-  seq_arcade,   // 28
-  seq_candles,  // 29
-  seq_lightning,  // 30 // "lDW|";
-  seq_haunt,       // 31 haunted display 
+  seq_arcade,   //
+  seq_haunt,     // 31 haunted display 
+
+  //seq_arctic_twilight,  // 26 *revisit* // "aDW|";
 #endif
   LLCA_END
 };

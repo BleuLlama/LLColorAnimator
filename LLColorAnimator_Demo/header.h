@@ -10,11 +10,8 @@
 ////////////////////////////////////////////////////////////////
 // Build Config
 
-// pick the strand to use
-#define kStrand_WS2801      // 4-wire
-//#define kStrand_NeoPixel    // 3-wire
-
-#define kNumberOfLights (80)        // # lights in the strand
+// dev mode? (dimmer lamps, 6 bulbs)
+#undef kDEVMODE
 
 // pick the platform
 //#define kHARDWARE_UNO_FIXED
@@ -22,6 +19,21 @@
 //#define kHARDWARE_LEONARDO
 //#define kHARDWARE_MEGA
 //#define kHARDWARE_GENERIC
+
+
+// pick the strand to use
+#define kStrand_WS2801      // 4-wire
+//#define kStrand_NeoPixel    // 3-wire
+
+// # lights in the strand
+#ifdef kDEVMODE
+#define kNumberOfLights (6)
+#else
+#define kNumberOfLights (80)
+#endif
+
+
+#define kDefaultSpeed (400)
 
 ////////////////////////////////////////////////////////////////
 
@@ -35,7 +47,12 @@
   #undef kUseDisplay
 
   //#define kFixed_Speed_Value   (150)
+
+#ifdef kDEVMODE  // candles ignore this. :(
+  #define kFixed_Brightness   (0.01)
+#else
   #define kFixed_Brightness   (0.5)
+#endif
 
   #define kLowMemory
 #endif // kHARDWARE_UNO
